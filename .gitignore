@@ -32,3 +32,4 @@ stm32-demo/build
 *.exe
 *.out
 *.app
+/build/

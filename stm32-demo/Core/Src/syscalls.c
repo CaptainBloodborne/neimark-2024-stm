@@ -30,6 +30,9 @@
 #include <sys/time.h>
 #include <sys/times.h>
 
+#include "stm32f1xx_hal.h"
+
+extern UART_HandleTypeDef huart1;
 
 /* Variables */
 extern int __io_putchar(int ch) __attribute__((weak));
@@ -81,6 +84,16 @@ __attribute__((weak)) int _write(int file, char *ptr, int len)
 {
   (void)file; (void)ptr; (void)len;
   // Here should be write implementation. Use UART :)
+  switch (file)
+  {
+    case 1:
+        HAL_UART_Transmit(&huart1, (__uint8_t *)ptr, len, 100);
+        break;
+    default:
+        errno = EBADF;
+        return -1;
+  }
+  
   return len;
 }
 
@@ -89,7 +102,6 @@ int _close(int file)
   (void)file;
   return -1;
 }
-
 
 int _fstat(int file, struct stat *st)
 {

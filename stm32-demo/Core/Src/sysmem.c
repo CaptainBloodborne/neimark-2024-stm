@@ -23,6 +23,9 @@
 /* Includes */
 #include <errno.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+
 
 /**
  * Pointer to the current high watermark of the heap usage
@@ -50,8 +53,13 @@ static uint8_t *__sbrk_heap_end = NULL;
  * @param incr Memory size
  * @return Pointer to allocated memory
  */
+
+unsigned int calls_counter[] = {0, 0, 0, 0, 0, 0};
+
 void *_sbrk(ptrdiff_t incr)
 {
+  calls_counter[0]++;
+
   extern uint8_t _end; /* Symbol defined in the linker script */
   extern uint8_t _estack; /* Symbol defined in the linker script */
   extern uint32_t _Min_Stack_Size; /* Symbol defined in the linker script */
@@ -76,4 +84,16 @@ void *_sbrk(ptrdiff_t incr)
   __sbrk_heap_end += incr;
 
   return (void *)prev_heap_end;
+}
+
+void *__wrap_malloc(size_t size) {
+  calls_counter[1]++;
+
+  return __real_malloc(size);
+}
+
+void *__wrap_free(void *ptr) {
+  calls_counter[2]++;
+
+  __real_free(ptr);
 }
