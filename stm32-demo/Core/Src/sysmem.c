@@ -26,6 +26,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "sysmem.h"
+
 
 /**
  * Pointer to the current high watermark of the heap usage
@@ -54,11 +56,18 @@ static uint8_t *__sbrk_heap_end = NULL;
  * @return Pointer to allocated memory
  */
 
-unsigned int calls_counter[] = {0, 0, 0, 0, 0, 0};
+// unsigned int calls_counter[] = {0, 0, 0};
+
+MemoryAllocationCalls memory_alloc_calls = {
+  .sbrk_calls = 0,
+  .malloc_calls = 0,
+  .free_calls = 0,
+};
 
 void *_sbrk(ptrdiff_t incr)
 {
-  calls_counter[0]++;
+  // calls_counter[0]++;
+  memory_alloc_calls.sbrk_calls++;
 
   extern uint8_t _end; /* Symbol defined in the linker script */
   extern uint8_t _estack; /* Symbol defined in the linker script */
@@ -87,13 +96,15 @@ void *_sbrk(ptrdiff_t incr)
 }
 
 void *__wrap_malloc(size_t size) {
-  calls_counter[1]++;
+  // calls_counter[1]++;
+  memory_alloc_calls.malloc_calls++;
 
   return __real_malloc(size);
 }
 
 void *__wrap_free(void *ptr) {
-  calls_counter[2]++;
+  // calls_counter[2]++;
+  memory_alloc_calls.free_calls++;
 
   __real_free(ptr);
 }

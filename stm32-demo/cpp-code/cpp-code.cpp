@@ -2,12 +2,13 @@
 #include <map>
 #include <string>
 #include <cstdio>
-#include <cstdlib>
+
+extern MemoryAllocationCalls memory_alloc_calls;
 
 // #include "stm32f1xx_hal.h"
 
 // static const unsigned char cpp_text[] = "Hello, stm32 C++ developer!\r\n";
-extern unsigned int calls_counter[3];
+// extern unsigned int calls_counter[3];
 
 // extern UART_HandleTypeDef huart1;
 
@@ -52,11 +53,10 @@ void print_stat()
         "_sbrk() called: %o times\r\n"
         "malloc() called: %o times\r\n"
         "free() called: %o times\r\n",
-        calls_counter[0], 
-        calls_counter[1], 
-        calls_counter[2]
+        memory_alloc_calls.sbrk_calls,
+        memory_alloc_calls.malloc_calls,
+        memory_alloc_calls.free_calls
     );
-    
 }
 
 void cpp_code_entry_point()
